@@ -1,0 +1,105 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+static_root/
+# If you collect static to a different folder, add it (e.g. /collected_static/)
+
+pip-wheel-metadata/
+__pypackages__/
+
+# PyCharm / VSCode / IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+*.swp
+*~
+
+# Docker
+docker-compose.override.yml
+*.local
+
+# Node / front-end (if you have a frontend folder)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+build/
+
+# Coverage / profiling / celery
+celerybeat-schedule
+celerybeat.pid
+.prof
+.cache/
+coverage/
+.mypy_cache/
+.pyre/
+.pytype/
+
+# Secret keys, credentials
+credentials.json
+secrets.json
