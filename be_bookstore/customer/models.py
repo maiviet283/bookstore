@@ -14,7 +14,7 @@ class Customer(models.Model):
     full_name = models.CharField(max_length=255)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True, default='M')
     date_of_birth = models.DateField(null=True, blank=True)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, null=True, blank=True)
     phone = models.CharField(max_length=15, unique=True)
     address = models.TextField(null=True, blank=True)
     username = models.CharField(max_length=150, unique=True)

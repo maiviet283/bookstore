@@ -20,7 +20,7 @@ class BookImageInline(admin.StackedInline):
 
     def preview(self, obj):
         if obj.image:
-            return format_html('<img src="{}" width="80" height="100" style="object-fit: cover; border-radius: 4px;" />', obj.image.url)
+            return format_html('<img src="{}" height="100" style="object-fit: cover; border-radius: 4px;" />', obj.image.url)
         return "Chưa có ảnh"
     preview.short_description = "Xem trước"
 
@@ -34,7 +34,7 @@ class BookAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     inlines = [BookImageInline]
     list_per_page = 10
-    ordering = ('-created_at',)
+    ordering = ('created_at',)
 
     fieldsets = (
         ("Thông tin cơ bản", {

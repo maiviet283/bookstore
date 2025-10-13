@@ -1,1 +1,7 @@
 pip freeze > requirements.txt
+
+
+python manage.py check
+python manage.py showmigrations
+python manage.py migrate
+python manage.py runserver
