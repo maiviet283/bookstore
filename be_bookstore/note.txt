@@ -1,7 +1,19 @@
 pip freeze > requirements.txt
 
+python manage.py runserver --noreload
 
 python manage.py check
 python manage.py showmigrations
 python manage.py migrate
 python manage.py runserver
+
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+logger.debug("Debug thông tin")
+logger.info("Thông tin quan trọng")
+logger.warning("Cảnh báo nhẹ")
+logger.error("Lỗi nghiêm trọng")
+logger.critical("Lỗi cực nghiêm trọng")

@@ -11,7 +11,7 @@ def auto_delete_old_book_image_on_update(sender, instance, **kwargs):
     Xóa ảnh cũ của sách khi cập nhật ảnh mới.
     """
     if not instance.pk:
-        return  # tạo mới -> bỏ qua
+        return
 
     try:
         old_image = Book.objects.get(pk=instance.pk).image
@@ -19,7 +19,6 @@ def auto_delete_old_book_image_on_update(sender, instance, **kwargs):
         return
 
     new_image = instance.image
-    # Nếu ảnh thay đổi và file cũ tồn tại -> xóa file cũ
     if old_image and old_image != new_image:
         if os.path.isfile(old_image.path):
             os.remove(old_image.path)
