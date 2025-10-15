@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from datetime import timedelta
 from .configs.logging_config import LOGGING
 
 load_dotenv()
@@ -87,9 +86,11 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
-        'CONN_MAX_AGE': 30,
+        'CONN_MAX_AGE': 60,
         'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION'",
+            'charset': 'utf8mb4',
+            'autocommit': True,
         },
     }
 }
@@ -119,81 +120,13 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-JAZZMIN_SETTINGS = {
-    "site_title": "Cửa Hàng Sách",
-    "site_header": "Quản Lý Cửa Hàng Sách",
-    "site_brand": "Book Store",
-    "welcome_sign": "Chào Mừng Đến Với Trang Quản Trị Cửa Hàng Sách",
-    "copyright": "© 2025 Book Store",
 
-    "site_logo": "core/images/book.png",
-    "login_logo": "core/images/bookstore.png",
-    "site_logo_classes": "img-circle",
-    
-    "logo_icon": "core/images/icon.png", 
+from .configs.cache_config import CACHES, SESSION_CACHE_ALIAS, SESSION_ENGINE
+from .configs.jazzmin_config import JAZZMIN_SETTINGS
+from .configs.jwt_config import SIMPLE_JWT
+from .configs.rest_config import REST_FRAMEWORK
 
-    "site_icon": "core/images/icon.png",
-
-    "topmenu_links": [
-        {"name": "Trang Chủ", "url": "admin:index", "permissions": ["auth.view_user"]},
-        {"name": "Website", "url": "/", "new_window": True},
-    ],
-
-    "usermenu_links": [
-        {"name": "Xem Website", "url": "/", "new_window": True},
-        {"name": "Mai Quốc Việt", "url": "https://maiviet.id.vn", "new_window": True}
-    ],
-    
-    "order_with_respect_to": [ 
-        "auth", 
-        "customer", 
-        "book", 
-        'review', 
-        'cart', 
-        'order', 
-        'core', 
-        "rest_framework_simplejwt.token_blacklist", ],
-}
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': False,
-    'UPDATE_LAST_LOGIN': False,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': os.getenv("JWT_SECRET_KEY"),
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'id',
-}
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'core.auth_customer.CustomJWTAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    "EXCEPTION_HANDLER": "core.exceptions.custom_exception_handler",
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
-}
-
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1"),
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#             "IGNORE_EXCEPTIONS": True,
-#         }
-#     }
-# }
-
-# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-# SESSION_CACHE_ALIAS = "default"
+HANDLER404 = 'core.exceptions.custom_404_handler'
 
 # LOGGING = {
 #     'version': 1,

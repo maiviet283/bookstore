@@ -17,3 +17,9 @@ logger.info("Thông tin quan trọng")
 logger.warning("Cảnh báo nhẹ")
 logger.error("Lỗi nghiêm trọng")
 logger.critical("Lỗi cực nghiêm trọng")
+
+FLUSHDB	⚠️ Xóa toàn bộ key trong DB đang chọn
+FLUSHALL	⚠️ Xóa sạch mọi thứ (db0, db1, db2, …)
+
+book_cache = caches["data_book_cache"]
+book_cache.clear()

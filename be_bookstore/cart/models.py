@@ -35,7 +35,6 @@ class CartItem(models.Model):
     book = models.ForeignKey('book.Book', on_delete=models.CASCADE, related_name='cart_items')
     quantity = models.PositiveIntegerField(default=1)
     price_at_time = models.DecimalField(max_digits=10, decimal_places=2, default=0)  
-    # giá tại thời điểm thêm
 
     class Meta:
         db_table = 'cart_item'
@@ -53,12 +52,10 @@ class CartItem(models.Model):
 
     def save(self, *args, **kwargs):
         """Khi thêm mới hoặc cập nhật số lượng, tự cập nhật tổng giỏ hàng"""
-        # Ghi nhận giá sách tại thời điểm thêm vào giỏ
         if not self.price_at_time:
             self.price_at_time = self.book.price
 
         super().save(*args, **kwargs)
-        # Cập nhật tổng tiền giỏ hàng
         self.cart.update_total()
 
     def delete(self, *args, **kwargs):

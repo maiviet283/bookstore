@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction, IntegrityError
 from django.contrib.auth.hashers import check_password, make_password
+from django.core.cache import caches
 
 from core.db_exceptions import handle_integrity_error
 from core.auth_customer import CustomJWTAuthentication
@@ -12,29 +13,43 @@ from .models import Customer
 
 from core.log_queries import log_queries
 
+cache = caches['default']
 
 class InforCustomer(APIView):
     """
         Lấy thông tin người dùng hiện tại, 
         Chỉ 1 truy vấn cơ sở dữ liệu, 
         Loại bỏ các trường nhạy cảm (password, is_active, is_delete)
-        Thời gian 25ms
+        Thời gian 15-25 ms
     """
     permission_classes = [IsAuthenticated]
     authentication_classes = [CustomJWTAuthentication]
 
     @log_queries
     def get(self, request):
+        cache_key = f'customer_{request.user.id}'
+        cached_data = cache.get(cache_key)
+        
+        if cached_data:
+            return Response({
+                "status": "success",
+                "message": "Lấy Thông Tin của Quý Khách Thành Công (Cache)",
+                "data": cached_data
+            }, status=status.HTTP_200_OK)
+        
         user = (
             Customer.objects
             .defer('password',"is_active","is_delete")
             .get(id=request.user.id)
         )
+        
         serializer = CustomerProfileSerializer(user)
+        data = serializer.data
+        cache.set(cache_key, data, timeout=600)
 
         return Response({
             "status": "success",
-            "message": "Lấy Thông Tin của Quý Khách Thành Công",
+            "message": "Lấy Thông Tin của Quý Khách Thành Công (DB)",
             "data": serializer.data
         }, status=status.HTTP_200_OK)
 
@@ -65,6 +80,8 @@ class UpdateCustomer(APIView):
         except IntegrityError as e:
             return Response(handle_integrity_error(e), status=status.HTTP_400_BAD_REQUEST)
 
+        cache.delete(f'customer_{request.user.id}')
+
         return Response({
             "status": "success",
             "message": "Cập nhật thông tin khách hàng thành công",
@@ -74,7 +91,7 @@ class UpdateCustomer(APIView):
 class UpdatePasswordCustomer(APIView):
     """
         Tốn 2 truy vấn
-        thời gian : 600ms - 2s
+        thời gian : 500ms - 2s
         thời gian quá nhiều do mã hoá mật khẩu
     """
     permission_classes = [IsAuthenticated]

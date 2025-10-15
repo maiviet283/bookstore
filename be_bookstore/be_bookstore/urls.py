@@ -8,8 +8,11 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     
     path('api/customers/', include('customer.urls')),
+    path('api/books/', include("book.urls")),
+    path('api/carts/', include('cart.urls')),
     
-    path('', include('core.urls'))
+    path('', include('core.urls')),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
@@ -21,3 +24,5 @@ if settings.DEBUG:
 urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
 )
+
+handler404 = "core.exceptions.custom_404_handler"

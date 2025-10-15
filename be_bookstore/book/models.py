@@ -31,7 +31,7 @@ class Category(models.Model):
 class Book(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='books')
     image = models.ImageField(upload_to='books/main/%Y/%m', blank=True, null=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, db_index=True)
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
     author = models.CharField(max_length=255, blank=True, null=True)
@@ -56,7 +56,7 @@ class Book(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} (ID:{self.id})"
     
     class Meta:
         db_table = 'book'

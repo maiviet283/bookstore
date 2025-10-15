@@ -113,6 +113,7 @@ class LoginCustomer(APIView):
         access = refresh.access_token
         
         return Response({
+            "status": "success",
             "message": "Đăng nhập thành công",
             "data": {
                 "access": str(access),
@@ -163,7 +164,7 @@ class RefreshTokenCustomer(APIView):
         Tạo mới Access Token từ Refresh Token của khách hàng.  
         Không truy vấn DB (toàn bộ dữ liệu lấy từ token).  
         Hiệu năng tối ưu, chỉ tốn 1 truy vấn hệ thống của Django ORM.
-        Thời gian: 30ms
+        Thời gian: 30-100 ms
     """
     permission_classes = [AllowAny]
 
