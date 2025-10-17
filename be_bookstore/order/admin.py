@@ -24,6 +24,7 @@ class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ('order_code', 'total_amount', 'created_at', 'updated_at')
     ordering = ('-created_at',)
     date_hierarchy = 'created_at'
+    list_per_page = 20
     inlines = [OrderItemInline]
 
     fieldsets = (
@@ -51,6 +52,7 @@ class OrderItemAdmin(admin.ModelAdmin):
     search_fields = ('book_title', 'order__order_code', 'order__customer__full_name')
     readonly_fields = ('subtotal', 'created_at')
     ordering = ('-created_at',)
+    list_per_page = 20
 
     def get_queryset(self, request):
         """Tối ưu truy vấn để tránh N+1"""

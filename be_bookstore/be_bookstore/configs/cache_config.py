@@ -54,6 +54,19 @@ if is_redis_available():
             },
             "TIMEOUT": 600,
         },
+        
+        "data_cart_cache": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/2",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
+                "IGNORE_EXCEPTIONS": True,
+                "SOCKET_CONNECT_TIMEOUT": 0.2,
+                "SOCKET_TIMEOUT": 0.2,
+            },
+            "TIMEOUT": 600,
+        },
     }
 
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -69,6 +82,10 @@ else:
             "LOCATION": "session-local",
         },
         "data_book_cache": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "data-local",
+        },
+        "data_cart_cache": {
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
             "LOCATION": "data-local",
         },

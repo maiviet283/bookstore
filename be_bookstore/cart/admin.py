@@ -38,6 +38,7 @@ class CartItemAdmin(admin.ModelAdmin):
     search_fields = ('book__name', 'cart__customer__full_name')
     autocomplete_fields = ['book', 'cart']
     ordering = ('-id',)
+    list_per_page = 20
 
     def price_display(self, obj):
         return f"{obj.price_at_time:,.0f} đ"

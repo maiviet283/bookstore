@@ -1,5 +1,4 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render
 
-# Create your views here.
 def index(request):
-    return HttpResponse("Hello world, <a href='/admin'>admin</a>")
+    return render(request, "core/index.html")

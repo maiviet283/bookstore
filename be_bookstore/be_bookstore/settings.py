@@ -19,45 +19,35 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Apps
+    
     'customer',
+    'review',
     'book',
     'core',
-    'review',
     'cart',
     'order',
     'payment',
 
-    # DRF + JWT
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
 
-    # CORS
     'corsheaders',
-    
-    'debug_toolbar',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
+    'be_bookstore.middleware.error_protection.GlobalExceptionMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware', #
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-INTERNAL_IPS = [
-    "127.0.0.1",
-    "localhost",
-]
-
 
 ROOT_URLCONF = 'be_bookstore.urls'
 
@@ -116,28 +106,16 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'vi'
 TIME_ZONE = 'Asia/Ho_Chi_Minh'
 USE_I18N = True
-USE_TZ = True
+USE_TZ = False
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 from .configs.cache_config import CACHES, SESSION_CACHE_ALIAS, SESSION_ENGINE
 from .configs.jazzmin_config import JAZZMIN_SETTINGS
 from .configs.jwt_config import SIMPLE_JWT
 from .configs.rest_config import REST_FRAMEWORK
+from .configs.bank_info import BANK_INFO
+from .configs.email_config import *
+#from .configs.log_sql import LOGGING
 
 HANDLER404 = 'core.exceptions.custom_404_handler'
-
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'console': {'class': 'logging.StreamHandler'},
-#     },
-#     'loggers': {
-#         'django.db.backends': {
-#             'handlers': ['console'],
-#             'level': 'DEBUG',
-#         },
-#     },
-# }

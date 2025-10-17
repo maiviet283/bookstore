@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bookstore API</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script>
+    // Auto dark mode
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex items-center justify-center min-h-screen transition-colors duration-300">
+
+  <div class="bg-white dark:bg-gray-800 shadow-2xl rounded-3xl p-10 text-center w-full max-w-lg transform hover:scale-[1.02] transition-all duration-300">
+    <!-- Header -->
+    <div class="mb-6">
+      <div class="mx-auto w-16 h-16 flex items-center justify-center bg-indigo-100 dark:bg-indigo-900 rounded-full shadow-md">
+        <i class="ph ph-books text-indigo-600 dark:text-indigo-400 text-3xl"></i>
+      </div>
+      <h1 class="text-4xl font-bold mt-4 text-indigo-600 dark:text-indigo-400">Bookstore API</h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-2 text-base">
+        Cổng truy cập dữ liệu sách của hệ thống Django REST API
+      </p>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex flex-col gap-4 mt-6">
+      <a href="/admin"
+         class="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-md hover:shadow-lg transition">
+         🔑 Trang Quản Trị (Admin)
+      </a>
+
+      <a href="/api/docs/"
+         class="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold shadow-md hover:shadow-lg transition">
+         📘 API Docs (Swagger)
+      </a>
+
+      <a href="/api/redoc/"
+         class="px-5 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-md hover:shadow-lg transition">
+         📙 API Redoc
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 text-sm text-gray-500 dark:text-gray-400">
+      <p>© 2025 <span class="text-indigo-500 font-semibold">Bookstore API</span></p>
+      <p class="mt-1">Built with ❤️ using <span class="text-emerald-500">Django</span> & <span class="text-sky-500">DRF</span></p>
+    </div>
+
+    <!-- Dark mode toggle -->
+    <button id="darkModeToggle" class="absolute top-6 right-6 text-gray-500 dark:text-gray-300 hover:text-indigo-500">
+      <i class="ph ph-moon text-xl"></i>
+    </button>
+  </div>
+
+  <script>
+    const toggleBtn = document.getElementById('darkModeToggle');
+    toggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+  </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 from .models import Order, OrderItem
 from django.db import transaction
 
+
 def create_order_from_cart(cart, payment_method='cod', shipping_address='', note=''):
     """Tạo đơn hàng từ giỏ hàng hiện tại (phiên bản tối ưu)"""
     cart_items = list(cart.items.select_related('book'))

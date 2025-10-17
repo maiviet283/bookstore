@@ -4,14 +4,6 @@ from django.utils.html import format_html
 from .models import Category, Book, BookImage
 
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'description')
-    search_fields = ('name', 'description')
-    prepopulated_fields = {"slug": ("name",)}
-    list_per_page = 20
-    
-
 class BookImageInline(admin.StackedInline):
     model = BookImage
     extra = 1
@@ -25,6 +17,14 @@ class BookImageInline(admin.StackedInline):
     preview.short_description = "Xem trước"
 
 
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'description')
+    search_fields = ('name', 'description')
+    prepopulated_fields = {"slug": ("name",)}
+    list_per_page = 20
+    
+    
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'author','price', 'stock', 'language', 'is_delete', 'thumbnail')

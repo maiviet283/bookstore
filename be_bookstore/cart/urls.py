@@ -1,8 +1,8 @@
 from django.urls import path
-from . import views
+from . import update_cart, views
 
 app_name = 'cart'
 urlpatterns = [
     path('', views.CartListAPIView.as_view(), name='carts'),
-    path('add/<int:book_id>', views.AddBookToCart.as_view(), name='add-to-cart'),
+    path('update/<int:book_id>/', update_cart.UpdateCartAPI.as_view(), name='update'),
 ]

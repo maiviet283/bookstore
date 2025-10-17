@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <title>Xác nhận đơn hàng</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            background-color: #ffffff;
+            max-width: 650px;
+            margin: 40px auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .email-header {
+            background: linear-gradient(90deg, #4f46e5, #6366f1);
+            color: white;
+            text-align: center;
+            padding: 24px;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .email-body {
+            padding: 24px;
+        }
+        .email-body h2 {
+            color: #111827;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .email-body p {
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background-color: #eef2ff;
+            color: #374151;
+            text-align: left;
+            padding: 10px;
+            font-weight: 600;
+            border-bottom: 2px solid #ddd;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .total {
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+            color: #111827;
+            margin-top: 20px;
+        }
+        .email-footer {
+            text-align: center;
+            font-size: 13px;
+            color: #9ca3af;
+            border-top: 1px solid #e5e7eb;
+            padding: 16px;
+            background-color: #f9fafb;
+        }
+        .highlight {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        @media (max-width: 600px) {
+            .email-body { padding: 16px; }
+            table, th, td { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>📚 BookStore</h1>
+            <p>Xác nhận đơn hàng thành công!</p>
+        </div>
+
+        <div class="email-body">
+            <h2>Xin chào {{ user.full_name|default:user.username }}</h2>
+            <p>
+                Cảm ơn bạn đã đặt hàng tại <span class="highlight">BookStore</span>.
+                Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.
+            </p>
+
+            <p><strong>Mã đơn hàng:</strong> <span class="highlight">#{{ order.order_code }}</span></p>
+            <p><strong>Phương thức thanh toán:</strong> {{ order.payment_method|upper }}</p>
+            <p><strong>Địa chỉ giao hàng:</strong> {{ order.shipping_address }}</p>
+
+            <h3>Chi tiết đơn hàng:</h3>
+            <table>
+                <tr>
+                    <th>Tên sách</th>
+                    <th style="text-align:center;">Số lượng</th>
+                    <th style="text-align:right;">Giá</th>
+                </tr>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.book.name }}</td>
+                    <td align="center">{{ item.quantity }}</td>
+                    <td align="right">{{ item.subtotal }} đ</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <p class="total">Tổng cộng: {{ order.total_amount }} đ</p>
+
+            <p>
+                Cảm ơn bạn đã tin tưởng và ủng hộ 💙<br>
+                Chúc bạn có một ngày tốt lành!
+            </p>
+        </div>
+
+        <div class="email-footer">
+            © 2025 BookStore — Được phát triển bằng Django & DRF
+        </div>
+    </div>
+</body>
+</html>
