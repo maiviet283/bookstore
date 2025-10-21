@@ -56,11 +56,11 @@ class InforCustomer(APIView):
 
 class UpdateCustomer(APIView):
     """
-        Cập nhật thông tin Customer chỉ tốn 3 truy vấn SQL: 
-        Một SELECT kiểm tra user tồn tại và active, 
-        Một UPDATE cập nhật các trường được gửi, 
-        Một COMMIT để hoàn tất transaction. 
-        Thời gian 14-50ms
+        Cập nhật thông tin Customer Tốn 5 truy vấn 
+        - Một SELECT kiểm tra user tồn tại và active, 
+        - Một UPDATE cập nhật các trường được gửi, 
+        - Một COMMIT để hoàn tất transaction. 
+        - Thời gian 50-150ms
     """
     permission_classes = [IsAuthenticated]
     authentication_classes = [CustomJWTAuthentication]
@@ -69,16 +69,18 @@ class UpdateCustomer(APIView):
     @transaction.atomic
     def patch(self, request):
         try:
-            serializer = CustomerUpdateSerializer(data=request.data, partial=True)
+            customer = Customer.objects.get(id=request.user.id, is_active=True)
+            serializer = CustomerUpdateSerializer(customer, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
-
-            update_data = serializer.validated_data
-
-            if update_data:
-                Customer.objects.filter(id=request.user.id).update(**update_data)
+            serializer.save()
 
         except IntegrityError as e:
             return Response(handle_integrity_error(e), status=status.HTTP_400_BAD_REQUEST)
+        except Customer.DoesNotExist:
+            return Response({
+                "status": "error",
+                "message": "Không tìm thấy khách hàng."
+            }, status=status.HTTP_404_NOT_FOUND)
 
         cache.delete(f'customer_{request.user.id}')
 

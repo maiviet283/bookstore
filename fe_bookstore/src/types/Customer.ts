@@ -31,11 +31,11 @@ export interface RegisterData {
 }
 
 export interface UpdateCustomerData {
-  avatar?: File | null;
+  avatar?: File | string | null;
   username?: string;
   full_name?: string;
   gender?: "M" | "F" | "O" | null;
-  date_of_birth?: string;
+  date_of_birth?: string | null;
   email?: string;
   phone?: string;
   address?: string;

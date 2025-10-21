@@ -1,11 +1,15 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import { authApi } from "../apis/authApi";
 
+// Giữ trạng thái đăng nhập, thông tin user, token, 
+// và cung cấp các hàm tiện ích như logout, updateProfile, setAuth, setMessage cho toàn app.
+
 type AuthContextType = {
     user: any | null;
     isAuthenticated: boolean;
     loading: boolean;
     logout: () => Promise<void>;
+    updateProfile: (data: any) => Promise<void>;
     setAuth: (user: any, authenticated: boolean) => void;
     setMessage: (msg: string, type?: "success" | "error") => void;
     message: { text: string; type: "success" | "error" } | null;
@@ -59,8 +63,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const updateProfile = async (data: any) => {
+        try {
+            const res = await authApi.updateProfile(data);
+            if (res.status === "success" && res.data) {
+                setAuth(res.data, true);
+                setMessage("Cập nhật thông tin thành công", "success");
+            } else {
+                setMessage(res.message || "Cập nhật thất bại", "error");
+            }
+        } catch (error) {
+            setMessage("Lỗi khi cập nhật thông tin", "error");
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, loading, logout, setAuth, setMessage, message }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                isAuthenticated,
+                loading,
+                logout,
+                updateProfile,
+                setAuth,
+                setMessage,
+                message,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
