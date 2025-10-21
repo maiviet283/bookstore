@@ -1,6 +1,74 @@
-import { Lock } from "lucide-react"
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Lock } from "lucide-react";
+import { authApi } from "../apis/authApi";
+import { useAuth } from "../context/AuthContext";
 
-const Login = () => {
+import InputField from "../components/InputField";
+import Button from "../components/Button";
+import AuthLink from "../components/AuthLink";
+import Loading from "../components/Loading";
+import { validateUsernameOrPhone, validatePassword } from "../utils/validators";
+
+const LoginPage = () => {
+  const [formData, setFormData] = useState({ username_or_phone: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [errors, setErrors] = useState<{ username_or_phone?: string | null; password?: string | null }>({});
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated, loading: authLoading, setAuth, setMessage: setGlobalMessage } = useAuth();
+
+  const from = location.state?.from?.pathname || "/";
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, authLoading, navigate, from]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: null });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage(null);
+
+    // validate trước khi gửi API
+    const newErrors = {
+      username_or_phone: validateUsernameOrPhone(formData.username_or_phone),
+      password: validatePassword(formData.password),
+    };
+
+    if (Object.values(newErrors).some(Boolean)) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await authApi.login(formData);
+      if (res.status === "success" && res.data?.access) {
+        const profileRes = await authApi.getProfile();
+        if (profileRes.data) {
+          setAuth(profileRes.data, true);
+          setGlobalMessage("Đăng nhập thành công", "success");
+          navigate(from, { replace: true });
+        }
+      } else {
+        setMessage({ type: "error", text: res.message || "Đăng nhập thất bại" });
+      }
+    } catch (err: any) {
+      setMessage({ type: "error", text: err?.message || "Sai thông tin đăng nhập hoặc lỗi máy chủ" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm border border-gray-100">
@@ -9,54 +77,49 @@ const Login = () => {
             <Lock className="w-6 h-6 text-indigo-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-800">Đăng nhập</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Chào mừng bạn quay lại 👋
-          </p>
         </div>
 
-        <form className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder="Nhập email..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Mật khẩu
-            </label>
-            <input
-              type="password"
-              placeholder="Nhập mật khẩu..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition duration-200 shadow-sm"
+        {loading && <Loading text="Đang đăng nhập..." />}
+        {message && (
+          <div
+            className={`p-3 rounded-md text-center ${message.type === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+              }`}
           >
+            {message.text}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <InputField
+            label="Username hoặc Số điện thoại"
+            name="username_or_phone"
+            value={formData.username_or_phone}
+            onChange={handleChange}
+            placeholder="Nhập Username hoặc Số điện thoại"
+            required
+            error={errors.username_or_phone}
+          />
+
+          <InputField
+            label="Mật khẩu"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Nhập mật khẩu..."
+            required
+            error={errors.password}
+          />
+
+          <Button type="submit" loading={loading}>
             Đăng nhập
-          </button>
+          </Button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
-          Chưa có tài khoản?{" "}
-          <a
-            href="#"
-            className="text-indigo-600 font-medium hover:underline transition"
-          >
-            Đăng ký ngay
-          </a>
-        </p>
+        <AuthLink to="/register" text="Chưa có tài khoản?" actionText="Đăng ký ngay" />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default LoginPage;

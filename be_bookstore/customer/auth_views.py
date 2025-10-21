@@ -6,6 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.db.models import Q
 from django.db import IntegrityError, DatabaseError, transaction
+from django.conf import settings
 
 from core.db_exceptions import handle_integrity_error
 from core.auth_customer import CustomJWTAuthentication
@@ -14,6 +15,7 @@ from .serializers import RegisterSerializer, LoginSerializer
 from .models import Customer
 from cart.models import Cart
 
+refresh_lifetime = int(settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds())
 from core.log_queries import log_queries
 
 
@@ -112,14 +114,24 @@ class LoginCustomer(APIView):
         refresh = CustomerRefreshToken.for_user(user)
         access = refresh.access_token
         
-        return Response({
+        response = Response({
             "status": "success",
             "message": "Đăng nhập thành công",
             "data": {
                 "access": str(access),
-                "refresh": str(refresh),
             },
         }, status=status.HTTP_200_OK)
+
+        response.set_cookie(
+            key="refresh",
+            value=str(refresh),
+            httponly=True,      # Không đọc được bằng JS
+            secure=True,        # Dùng HTTPS
+            samesite="Strict",  # Chống CSRF
+            max_age=refresh_lifetime,
+        )
+
+        return response
 
 
 class LogoutCustomer(APIView):
@@ -138,7 +150,7 @@ class LogoutCustomer(APIView):
 
     @log_queries
     def post(self, request):
-        refresh_token = request.data.get("refresh")
+        refresh_token = request.COOKIES.get("refresh")
         if not refresh_token:
             return Response(
                 {"status": "error", "message": "Cần có Refresh token"},
@@ -170,7 +182,7 @@ class RefreshTokenCustomer(APIView):
 
     @log_queries
     def post(self, request):
-        refresh_token = request.data.get("refresh")
+        refresh_token = request.COOKIES.get("refresh")
         if not refresh_token:
             return Response({
                 "status": "error",

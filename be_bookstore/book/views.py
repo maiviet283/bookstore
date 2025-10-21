@@ -69,6 +69,8 @@ class CategoryListAPIView(APIView):
 class BookListAPIView(APIView):
     """
         API lấy toàn bộ danh sách Sách Đọc
+        - Tốn 2 truy vấn SQL
+        - Thời gian: 5-30ms
     """
     permission_classes = [AllowAny]
 
@@ -76,7 +78,7 @@ class BookListAPIView(APIView):
     def get(self, request):
         qs = Book.objects.only(
             'id', 'name', 'image', 'price', 'author','slug'
-        )
+        ).order_by('id')
 
         category_id = request.query_params.get("category")
         if category_id:
@@ -122,7 +124,7 @@ class BookListAPIView(APIView):
 class BookDetailAPIView(APIView):
     """
         API lấy thông tin chi tiết sách.
-        - Thời gian xử lý trung bình: 15-60ms.
+        - Thời gian xử lý trung bình: 2-20ms.
         - Chỉ tốn 2 truy vấn SQL khi dùng DB vì có prefetch_related.
         - Dữ liệu được cache 10 phút trong Redis để giảm tải DB.
     """
