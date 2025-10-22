@@ -124,20 +124,15 @@ from .configs.email_config import *
 
 HANDLER404 = 'core.exceptions.custom_404_handler'
 
+# --- CORS / CSRF / COOKIE CONFIG ---
+CORS_ALLOWED_ORIGINS = []
+CORS_ALLOW_ALL_ORIGINS = True
 
-# --- CORS / CSRF / COOKIE CONFIG ---
-# --- CORS / CSRF / COOKIE CONFIG ---
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+CSRF_TRUSTED_ORIGINS = ["http://*", "https://*"]
+
+# Nếu vẫn lỗi cookie không gửi:
 CORS_ALLOW_CREDENTIALS = True
-
-CSRF_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False

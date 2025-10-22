@@ -126,8 +126,8 @@ class LoginCustomer(APIView):
             key="refresh",
             value=str(refresh),
             httponly=True,
-            secure=False,
-            samesite="Lax",
+            secure=True,
+            samesite="None",
             max_age=refresh_lifetime,
             path="/",
         )
@@ -151,12 +151,14 @@ class LogoutCustomer(APIView):
 
     @log_queries
     def post(self, request):
+        print(f"Logout - Cookies: {request.COOKIES}")
+        print(f"Logout - Headers: {request.headers.get('Origin')}")
+
         refresh_token = request.COOKIES.get("refresh")
         if not refresh_token:
-            return Response(
-                {"status": "error", "message": "Cần có Refresh token"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({
+                "status": "error", "message": "Cần có Refresh token"
+                },status=status.HTTP_400_BAD_REQUEST)
 
         try:
             RefreshToken(refresh_token).blacklist()
@@ -171,13 +173,12 @@ class LogoutCustomer(APIView):
             status=status.HTTP_205_RESET_CONTENT
         )
         
-import traceback
         
 class RefreshTokenCustomer(APIView):
     """
     Làm mới Access Token từ Refresh Token (lưu trong cookie).
     - Không truy vấn DB
-    - Thời gian phản hồi: 30–100ms
+    - Thời gian phản hồi: 30-100ms
     """
     permission_classes = [AllowAny]
 
@@ -193,7 +194,6 @@ class RefreshTokenCustomer(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Giải mã & xác thực refresh token
             token = CustomerRefreshToken(refresh_token)
             new_access = token.access_token
 
@@ -205,36 +205,28 @@ class RefreshTokenCustomer(APIView):
                 }
             }, status=status.HTTP_200_OK)
 
-            # Thiết lập lại cookie refresh (nếu cần làm mới thời hạn)
             response.set_cookie(
                 key="refresh",
                 value=str(refresh_token),
                 httponly=True,
-                secure=False,       # dùng True nếu deploy production
-                samesite="Lax",
-                max_age=settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds(),
+                secure=True,
+                samesite="None",
+                max_age=refresh_lifetime,
                 path="/",
             )
+            print(f"[RefreshTokenCustomer] Set new access token and refreshed cookie.")
             return response
 
         except (InvalidToken, TokenError) as e:
-            # JWT lỗi định dạng hoặc hết hạn
-            print(f"[JWT Error] {type(e).__name__}: {e}")
-            if settings.DEBUG:
-                traceback.print_exc()
+            print(f"[RefreshTokenCustomer] Token error: {e}")
             return Response({
                 "status": "error",
                 "error": "Refresh token không hợp lệ hoặc đã hết hạn",
-                "details": str(e) if settings.DEBUG else None
             }, status=status.HTTP_401_UNAUTHORIZED)
 
         except Exception as e:
-            # Lỗi không mong muốn
-            print(f"[Unexpected Error] {type(e).__name__}: {e}")
-            if settings.DEBUG:
-                traceback.print_exc()
+            print(f"[RefreshTokenCustomer] Unexpected error: {e}")
             return Response({
                 "status": "error",
                 "error": "Lỗi không xác định khi làm mới token",
-                "details": str(e) if settings.DEBUG else None
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

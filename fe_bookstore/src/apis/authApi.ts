@@ -8,6 +8,7 @@ import type {
     UpdateCustomerData,
 } from "../types/Customer";
 
+
 export const authApi = {
     async login(data: LoginData) {
         const res = await api.post<ApiResponse<LoginResponse>>("customers/login/", data);

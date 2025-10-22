@@ -20,7 +20,7 @@ export const bookApi = {
   },
 
   async getCategories() {
-    const response = await api.get<ApiResponse<Category[]>>("books/categories/");
+    const response = await api.get<ApiResponse<Category[]>>("books/categories/", );
     return response.data;
   },
 
