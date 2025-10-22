@@ -1,4 +1,4 @@
-import api from "./axiosConfig";
+import { apiRequest } from "./axiosConfig";
 import type { ApiResponse } from "../types/ApiResponse";
 import type { BookListResponse, BookDetail } from "../types/Book";
 import type { Category } from "../types/Category";
@@ -12,20 +12,27 @@ export type GetBooksParams = {
 
 export const bookApi = {
   async getBooks(params: GetBooksParams = {}, nextUrl?: string) {
-    const res = await api.get<ApiResponse<BookListResponse>>(
-      nextUrl ?? "/books/",
-      nextUrl ? undefined : { params }
-    );
+    const res = await apiRequest<ApiResponse<BookListResponse>>({
+      url: nextUrl || "/books/",
+      method: "get",
+      params: nextUrl ? undefined : params,
+    });
     return res.data;
   },
 
   async getCategories() {
-    const res = await api.get<ApiResponse<Category[]>>("books/categories/");
+    const res = await apiRequest<ApiResponse<Category[]>>({
+      url: "/books/categories/",
+      method: "get",
+    });
     return res.data;
   },
 
   async getBookById(id: number) {
-    const res = await api.get<ApiResponse<BookDetail>>(`books/${id}/`);
+    const res = await apiRequest<ApiResponse<BookDetail>>({
+      url: `/books/${id}/`,
+      method: "get",
+    });
     return res.data;
   },
 };
