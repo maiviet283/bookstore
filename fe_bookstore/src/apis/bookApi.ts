@@ -12,20 +12,20 @@ export type GetBooksParams = {
 
 export const bookApi = {
   async getBooks(params: GetBooksParams = {}, nextUrl?: string) {
-    const response = await api.get<ApiResponse<BookListResponse>>(
-      nextUrl ? nextUrl : "/books/",
+    const res = await api.get<ApiResponse<BookListResponse>>(
+      nextUrl ?? "/books/",
       nextUrl ? undefined : { params }
     );
-    return response.data;
+    return res.data;
   },
 
   async getCategories() {
-    const response = await api.get<ApiResponse<Category[]>>("books/categories/", );
-    return response.data;
+    const res = await api.get<ApiResponse<Category[]>>("books/categories/");
+    return res.data;
   },
 
   async getBookById(id: number) {
-    const response = await api.get<ApiResponse<BookDetail>>(`books/${id}/`);
-    return response.data;
+    const res = await api.get<ApiResponse<BookDetail>>(`books/${id}/`);
+    return res.data;
   },
 };

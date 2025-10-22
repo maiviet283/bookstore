@@ -4,11 +4,20 @@ import { setGlobalError } from "../context/ErrorContext";
 import { navigateTo } from "../utils/navigateHelper";
 
 
-const api = axios.create({
+// Instance chính: KHÔNG gửi cookie refresh
+export const api = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  withCredentials: false,
+});
+
+// Instance dành riêng cho refresh / logout
+export const authApiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   withCredentials: true,
 });
+
 
 api.interceptors.request.use(
   (config) => {
@@ -27,28 +36,20 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // ❌ Không retry khi chính request đó là refresh-token
     if (originalRequest?.url?.includes("customers/refresh-token")) {
       return Promise.reject(error);
     }
 
-    // 🔁 Nếu Access Token hết hạn (401)
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        // ⚙️ Gọi refresh token mà KHÔNG gửi Authorization header
-        const res = await axios.post(
-          `${API_BASE_URL}/customers/refresh-token/`,
-          {},
-          { withCredentials: true }
-        );
-
+        const res = await authApiClient.post("customers/refresh-token/", {});
         const newAccess = res.data.data?.access;
+
         if (newAccess) {
           localStorage.setItem("access_token", newAccess);
 
-          // Gắn token mới vào request cũ rồi gọi lại
           originalRequest.headers["Authorization"] = `Bearer ${newAccess}`;
           return api(originalRequest);
         }
@@ -62,7 +63,6 @@ api.interceptors.response.use(
       }
     }
 
-    // ❗ Các lỗi khác
     const message =
       error.response?.data?.message ||
       error.message ||
