@@ -71,13 +71,6 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 
-# Logs and temp files
-*.log
-*.tmp
-*.temp
-*.swp
-*~
-
 # Docker
 docker-compose.override.yml
 *.local

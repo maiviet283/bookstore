@@ -4,9 +4,10 @@ import { API_BASE_URL } from "../config";
 import { setGlobalError } from "../context/ErrorContext";
 import { navigateTo } from "../utils/navigateHelper";
 
+
 export interface ApiRequestOptions extends AxiosRequestConfig {
-  useAccess?: boolean;   // có gắn access token không
-  useRefresh?: boolean;  // có gửi cookie refresh token không
+  useAccess?: boolean;
+  useRefresh?: boolean;
 }
 
 const baseConfig = {
@@ -14,9 +15,7 @@ const baseConfig = {
   timeout: 10000,
 };
 
-/**
- * 🔹 Hàm gọi API linh hoạt có xử lý Access & Refresh Token
- */
+
 export const apiRequest = async <T>(
   options: ApiRequestOptions
 ): Promise<AxiosResponse<T>> => {
@@ -24,7 +23,7 @@ export const apiRequest = async <T>(
 
   const instance = axios.create({
     ...baseConfig,
-    withCredentials: !!useRefresh, // gửi cookie refresh nếu cần
+    withCredentials: !!useRefresh,
   });
 
   // ===== Interceptor Request =====
@@ -36,8 +35,8 @@ export const apiRequest = async <T>(
           if (config.headers instanceof AxiosHeaders) {
             config.headers.set("Authorization", `Bearer ${accessToken}`);
           } else {
-            (config.headers as any) = {
-              ...(config.headers || {}),
+            (config.headers as Record<string, string>) = {
+              ...(config.headers as Record<string, string>),
               Authorization: `Bearer ${accessToken}`,
             };
           }
@@ -88,7 +87,6 @@ export const apiRequest = async <T>(
         }
       }
 
-      // Các lỗi khác
       const message =
         error.response?.data?.message ||
         error.message ||

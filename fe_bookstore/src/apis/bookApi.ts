@@ -3,12 +3,14 @@ import type { ApiResponse } from "../types/ApiResponse";
 import type { BookListResponse, BookDetail } from "../types/Book";
 import type { Category } from "../types/Category";
 
+
 export type GetBooksParams = {
   category?: string;
   search?: string;
   order?: "asc" | "desc" | "";
   page?: number;
 };
+
 
 export const bookApi = {
   async getBooks(params: GetBooksParams = {}, nextUrl?: string) {
