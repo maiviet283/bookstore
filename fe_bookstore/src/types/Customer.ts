@@ -40,3 +40,8 @@ export interface UpdateCustomerData {
   phone?: string;
   address?: string;
 }
+
+export interface ChangePasswordData {
+  old_password: string;
+  new_password: string;
+}

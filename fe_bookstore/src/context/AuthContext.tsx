@@ -9,7 +9,7 @@ type AuthContextType = {
     isAuthenticated: boolean;
     loading: boolean;
     logout: () => Promise<void>;
-    updateProfile: (data: any) => Promise<void>;
+    updateProfile: (data: any) => Promise<any>;
     setAuth: (user: any, authenticated: boolean) => void;
     setMessage: (msg: string, type?: "success" | "error") => void;
     message: { text: string; type: "success" | "error" } | null;
@@ -20,7 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<any | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(true); // để chờ load profile
+    const [loading, setLoading] = useState(true);
     const [message, setMessageState] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
     useEffect(() => {
@@ -48,9 +48,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const setMessage = (text: string, type: "success" | "error" = "success") => {
-        setMessageState({ text, type });
-        if (text) setTimeout(() => setMessageState(null), 3000);
+        setMessageState(null);
+        setTimeout(() => {
+            setMessageState({ text, type });
+        }, 10);
     };
+
 
     const logout = async () => {
         try {
@@ -64,18 +67,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const updateProfile = async (data: any) => {
-        try {
-            const res = await authApi.updateProfile(data);
-            if (res.status === "success" && res.data) {
-                setAuth(res.data, true);
-                setMessage("Cập nhật thông tin thành công", "success");
-            } else {
-                setMessage(res.message || "Cập nhật thất bại", "error");
-            }
-        } catch (error) {
-            setMessage("Lỗi khi cập nhật thông tin", "error");
+    try {
+        const res = await authApi.updateProfile(data);
+        if (res.status === "success" && res.data) {
+            setAuth(res.data, true);
+            setMessage("Cập nhật thông tin thành công", "success");
+        } else {
+            setMessage(res.message || "Cập nhật thất bại", "error");
         }
-    };
+        return res; // ✅ Thêm dòng này
+    } catch (error) {
+        setMessage("Lỗi khi cập nhật thông tin", "error");
+        return { status: "error", message: "Lỗi khi cập nhật thông tin", data: null }; // ✅ Trả về fallback an toàn
+    }
+};
+
 
     return (
         <AuthContext.Provider

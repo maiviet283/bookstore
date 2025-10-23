@@ -1,6 +1,5 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
 from rest_framework import status
 from django.db import DatabaseError
 
@@ -8,6 +7,7 @@ from core.auth_customer import CustomJWTAuthentication
 from .models import Review
 from .serializers import ReviewSerializer, ReviewCreateSerializer
 from core.log_queries import log_queries
+from core.responses import success_response, error_response
 
 
 class ReviewListAPIView(APIView):
@@ -34,23 +34,23 @@ class ReviewListAPIView(APIView):
             )
 
             serializer = ReviewSerializer(reviews, many=True)
-            return Response({
-                "status": "success",
-                "count": len(serializer.data),
-                "data": serializer.data
-            }, status=status.HTTP_200_OK)
+            return success_response(
+                message="Lấy danh sách bình luận thành công",
+                data={"count": len(serializer.data), "results": serializer.data},
+                http_status=status.HTTP_200_OK,
+            )
 
         except DatabaseError:
-            return Response({
-                "status": "error",
-                "message": "Lỗi cơ sở dữ liệu."
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return error_response(
+                message="Lỗi cơ sở dữ liệu.",
+                http_status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         except Exception:
-            return Response({
-                "status": "error",
-                "message": "Lỗi máy chủ không xác định."
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return error_response(
+                message="Lỗi máy chủ không xác định.",
+                http_status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class ReviewAddAPIView(APIView):
@@ -70,10 +70,11 @@ class ReviewAddAPIView(APIView):
         serializer = ReviewCreateSerializer(data=request.data)
 
         if not serializer.is_valid():
-            return Response({
-                "status": "error",
-                "message": serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                message="Dữ liệu không hợp lệ",
+                errors=serializer.errors,
+                http_status=status.HTTP_400_BAD_REQUEST,
+            )
 
         data = serializer.validated_data
 
@@ -84,17 +85,17 @@ class ReviewAddAPIView(APIView):
                 rating=data["rating"],
                 comment=data["comment"]
             )
-            return Response({
-                "status": "success",
-                "message": "Thêm bình luận thành công."
-            }, status=status.HTTP_201_CREATED)
+            return success_response(
+                message="Thêm bình luận thành công.",
+                http_status=status.HTTP_201_CREATED,
+            )
 
         except DatabaseError:
-            return Response({
-                "status": "error",
-                "message": "Lỗi cơ sở dữ liệu."
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
+            return error_response(
+                message="Lỗi cơ sở dữ liệu.",
+                http_status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
 
 class ReviewUpdateAPIView(APIView):
     """
@@ -113,10 +114,11 @@ class ReviewUpdateAPIView(APIView):
         serializer = ReviewCreateSerializer(data=request.data)
 
         if not serializer.is_valid():
-            return Response({
-                "status": "error",
-                "message": serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                message="Dữ liệu không hợp lệ",
+                errors=serializer.errors,
+                http_status=status.HTTP_400_BAD_REQUEST,
+            )
 
         data = serializer.validated_data
 
@@ -131,21 +133,21 @@ class ReviewUpdateAPIView(APIView):
             )
 
             if updated == 0:
-                return Response({
-                    "status": "error",
-                    "message": "Không tìm thấy bình luận hoặc bạn không có quyền sửa."
-                }, status=status.HTTP_404_NOT_FOUND)
+                return error_response(
+                    message="Không tìm thấy bình luận hoặc bạn không có quyền sửa.",
+                    http_status=status.HTTP_404_NOT_FOUND,
+                )
 
-            return Response({
-                "status": "success",
-                "message": "Cập nhật bình luận thành công."
-            }, status=status.HTTP_200_OK)
+            return success_response(
+                message="Cập nhật bình luận thành công.",
+                http_status=status.HTTP_200_OK,
+            )
 
         except DatabaseError:
-            return Response({
-                "status": "error",
-                "message": "Lỗi cơ sở dữ liệu."
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return error_response(
+                message="Lỗi cơ sở dữ liệu.",
+                http_status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class ReviewDeleteAPIView(APIView):
@@ -172,18 +174,18 @@ class ReviewDeleteAPIView(APIView):
             )
 
             if deleted == 0:
-                return Response({
-                    "status": "error",
-                    "message": "Không tìm thấy bình luận hoặc bạn không có quyền xóa."
-                }, status=status.HTTP_404_NOT_FOUND)
+                return error_response(
+                    message="Không tìm thấy bình luận hoặc bạn không có quyền xóa.",
+                    http_status=status.HTTP_404_NOT_FOUND,
+                )
 
-            return Response({
-                "status": "success",
-                "message": "Xóa bình luận thành công."
-            }, status=status.HTTP_200_OK)
+            return success_response(
+                message="Xóa bình luận thành công.",
+                http_status=status.HTTP_200_OK,
+            )
 
         except DatabaseError:
-            return Response({
-                "status": "error",
-                "message": "Lỗi cơ sở dữ liệu."
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return error_response(
+                message="Lỗi cơ sở dữ liệu.",
+                http_status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )

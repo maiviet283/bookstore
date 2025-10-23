@@ -6,6 +6,7 @@ import type {
     RegisterData,
     Customer,
     UpdateCustomerData,
+    ChangePasswordData
 } from "../types/Customer";
 
 
@@ -39,6 +40,7 @@ export const authApi = {
             url: "/customers/me/",
             method: "get",
             useAccess: true,
+            showAlert: false,
         });
         return res.data;
     },
@@ -62,6 +64,16 @@ export const authApi = {
                 data instanceof FormData
                     ? { "Content-Type": "multipart/form-data" }
                     : { "Content-Type": "application/json" },
+        });
+        return res.data;
+    },
+
+    async changePassword(data: FormData | ChangePasswordData) {
+        const res = await apiRequest<ApiResponse<Customer>>({
+            url: "/customers/change-password/",
+            method: "patch",
+            data,
+            useAccess: true,
         });
         return res.data;
     },

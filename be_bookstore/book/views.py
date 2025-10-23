@@ -1,7 +1,5 @@
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from rest_framework import status
 from rest_framework.permissions import AllowAny
 from django.db import DatabaseError
 from django.core.cache import caches
@@ -9,6 +7,7 @@ from django.core.cache import caches
 from .models import Book, Category
 from .serializers import BookSerializer, BookDetailSerializer, CategoryListSerializer
 from core.log_queries import log_queries
+from core.responses import success_response, error_response
 
 cache = caches['data_book_cache']
 
@@ -17,7 +16,7 @@ class CustomBookPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'per_page'
     max_page_size = 50
-    
+
 
 class CategoryListAPIView(APIView):
     """
@@ -35,11 +34,10 @@ class CategoryListAPIView(APIView):
         try:
             cached_data = cache.get(cache_key)
             if cached_data:
-                return Response({
-                    "status": "success",
-                    "message": "Lấy danh sách danh mục thành công (Cache)",
-                    "data": cached_data
-                }, status=status.HTTP_200_OK)
+                return success_response(
+                    message="Lấy danh sách danh mục thành công (Cache)",
+                    data=cached_data
+                )
 
             categories = Category.objects.only('id', 'name')
             serializer = CategoryListSerializer(categories, many=True)
@@ -47,24 +45,23 @@ class CategoryListAPIView(APIView):
 
             cache.set(cache_key, data, timeout=3600)
 
-            return Response({
-                "status": "success",
-                "message": "Lấy danh sách danh mục thành công (DB)",
-                "data": data
-            }, status=status.HTTP_200_OK)
+            return success_response(
+                message="Lấy danh sách danh mục thành công (DB)",
+                data=data
+            )
 
-        except DatabaseError as e:
-            return Response({
-                "status": "error",
-                "message": "Lỗi truy vấn cơ sở dữ liệu.",
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except DatabaseError:
+            return error_response(
+                message="Lỗi truy vấn cơ sở dữ liệu.",
+                http_status=500
+            )
 
-        except Exception as e:
-            return Response({
-                "status": "error",
-                "message": "Đã xảy ra lỗi không mong muốn.",
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+        except Exception:
+            return error_response(
+                message="Đã xảy ra lỗi không mong muốn.",
+                http_status=500
+            )
+
 
 class BookListAPIView(APIView):
     """
@@ -77,7 +74,7 @@ class BookListAPIView(APIView):
     @log_queries
     def get(self, request):
         qs = Book.objects.only(
-            'id', 'name', 'image', 'price', 'author','slug'
+            'id', 'name', 'image', 'price', 'author', 'slug'
         ).order_by('id')
 
         category_id = request.query_params.get("category")
@@ -102,23 +99,24 @@ class BookListAPIView(APIView):
         try:
             paginated_qs = paginator.paginate_queryset(qs, request, view=self)
         except Exception:
-            return Response({
-                "status": "error",
-                "message": "Lỗi khi phân trang."
-                },status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                message="Lỗi khi phân trang.",
+                http_status=400
+            )
 
         serializer = BookSerializer(paginated_qs, many=True)
-        
-        return Response({
-            "status": "success",
-            "message": "Lấy danh sách thành công",
-            "data": {
-                "count": paginator.page.paginator.count,
-                "next": paginator.get_next_link(),
-                "previous": paginator.get_previous_link(),
-                "results": serializer.data,
-            }
-        })
+
+        data = {
+            "count": paginator.page.paginator.count,
+            "next": paginator.get_next_link(),
+            "previous": paginator.get_previous_link(),
+            "results": serializer.data,
+        }
+
+        return success_response(
+            message="Lấy danh sách thành công",
+            data=data
+        )
 
 
 class BookDetailAPIView(APIView):
@@ -136,11 +134,10 @@ class BookDetailAPIView(APIView):
         cached_data = cache.get(cache_key)
 
         if cached_data:
-            return Response({
-                "status": "success",
-                "message": "Lấy Thông Tin Sách Thành Công (Cache)",
-                "data": cached_data
-            }, status=status.HTTP_200_OK)
+            return success_response(
+                message="Lấy Thông Tin Sách Thành Công (Cache)",
+                data=cached_data
+            )
 
         try:
             book = (
@@ -151,17 +148,16 @@ class BookDetailAPIView(APIView):
                 .get(id=id)
             )
         except (ValueError, TypeError, Book.DoesNotExist):
-            return Response({
-                "status": "error",
-                "message": "Không tìm thấy sách với ID được cung cấp."
-            }, status=status.HTTP_404_NOT_FOUND)
+            return error_response(
+                message="Không tìm thấy sách với ID được cung cấp.",
+                http_status=404
+            )
 
         serializer = BookDetailSerializer(book)
         data = serializer.data
         cache.set(cache_key, data, timeout=600)
 
-        return Response({
-            "status": "success",
-            "message": "Lấy Thông Tin Sách Thành Công (DB)",
-            "data": data
-        }, status=status.HTTP_200_OK)
+        return success_response(
+            message="Lấy Thông Tin Sách Thành Công (DB)",
+            data=data
+        )

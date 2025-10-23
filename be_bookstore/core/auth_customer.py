@@ -14,11 +14,13 @@ class CustomJWTAuthentication(JWTAuthentication):
             return super().get_validated_token(raw_token)
         except InvalidToken:
             raise DRFAuthFailed({
+                "status":"error",
                 "message": "Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.",
                 "code": "invalid_or_expired_token"
             })
         except Exception as e:
             raise DRFAuthFailed({
+                "status":"error",
                 "message": f"Lỗi không xác định khi kiểm tra token: {str(e)}",
                 "code": "token_validation_error"
             })
@@ -39,21 +41,25 @@ class CustomJWTAuthentication(JWTAuthentication):
             )
         except Customer.DoesNotExist:
             raise AuthenticationFailed({
+                "status":"error",
                 "message": "Người dùng không tồn tại hoặc đã bị xóa",
                 "code": "user_not_found"
             })
         except DatabaseError:
             raise AuthenticationFailed({
+                "status":"error",
                 "message": "Lỗi cơ sở dữ liệu trong quá trình xác thực",
                 "code": "database_error"
             })
         except OperationalError:
             raise AuthenticationFailed({
+                "status":"error",
                 "message": "Không thể kết nối cơ sở dữ liệu. Vui lòng thử lại sau.",
                 "code": "db_connection_failed"
             })
         except Exception as e:
             raise AuthenticationFailed({
+                "status":"error",
                 "message": f"Lỗi không xác định khi lấy thông tin người dùng: {str(e)}",
                 "code": "unknown_auth_error"
             })

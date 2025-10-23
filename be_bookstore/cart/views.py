@@ -1,23 +1,21 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from django.db.models import  Prefetch
+from django.db.models import Prefetch
 from django.core.cache import caches
 
 from core.auth_customer import CustomJWTAuthentication
 from .serializers import CartSerializer
 from .models import Cart, CartItem
-
 from core.log_queries import log_queries
-
+from core.responses import success_response, error_response
 
 cache = caches['data_cart_cache']
+
 
 class CartListAPIView(APIView):
     """
         API hiển thị giỏ hàng hiện tại của khách hàng
-        - Tốn 2 Truy vấn vì sử dụng prefetch_related (1 Chính và 1 Phụ)
+        - Tốn 2 truy vấn vì sử dụng prefetch_related (1 chính, 1 phụ)
         - Thời gian: 30-60ms
     """
     permission_classes = [IsAuthenticated]
@@ -28,14 +26,13 @@ class CartListAPIView(APIView):
         try:
             user_id = request.user.id
             cache_key = f"cart_info_{user_id}"
+
             cached_data = cache.get(cache_key)
-            
             if cached_data:
-                return Response({
-                        "status": "success",
-                        "message": "Lấy giỏ hàng thành công (Cache)",
-                        "data": cached_data,
-                    },status=status.HTTP_200_OK)
+                return success_response(
+                    message="Lấy giỏ hàng thành công (Cache)",
+                    data=cached_data
+                )
 
             cart = (
                 Cart.objects
@@ -54,22 +51,22 @@ class CartListAPIView(APIView):
             )
 
             if not cart:
-                return Response({
-                    "status": "error", "message": "Không tìm thấy giỏ hàng hoạt động"
-                    },status=status.HTTP_404_NOT_FOUND,)
+                return error_response(
+                    message="Không tìm thấy giỏ hàng hoạt động",
+                    http_status=404
+                )
 
             serializer = CartSerializer(cart, context={"request": request})
             data = serializer.data
             cache.set(cache_key, data, timeout=600)
 
-            return Response({
-                    "status": "success",
-                    "message": "Lấy giỏ hàng thành công (DB)",
-                    "data": data,
-                },status=status.HTTP_200_OK)
+            return success_response(
+                message="Lấy giỏ hàng thành công (DB)",
+                data=data
+            )
 
         except Exception:
-            return Response({
-                    "status": "error",
-                    "message": "Đã xảy ra lỗi khi lấy giỏ hàng",
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return error_response(
+                message="Đã xảy ra lỗi khi lấy giỏ hàng",
+                http_status=500
+            )

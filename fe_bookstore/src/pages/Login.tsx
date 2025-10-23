@@ -60,10 +60,10 @@ const LoginPage = () => {
           navigate(from, { replace: true });
         }
       } else {
-        setMessage({ type: "error", text: res.message || "Đăng nhập thất bại" });
+        setMessage({ type: "error", text: "Đăng nhập thất bại" });
       }
     } catch (err: any) {
-      setMessage({ type: "error", text: err?.message || "Sai thông tin đăng nhập hoặc lỗi máy chủ" });
+      setMessage({ type: "error", text: "Sai thông tin đăng nhập hoặc lỗi máy chủ" });
     } finally {
       setLoading(false);
     }

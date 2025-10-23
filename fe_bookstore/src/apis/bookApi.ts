@@ -18,6 +18,7 @@ export const bookApi = {
       url: nextUrl || "/books/",
       method: "get",
       params: nextUrl ? undefined : params,
+      showAlert: false,
     });
     return res.data;
   },
@@ -26,6 +27,7 @@ export const bookApi = {
     const res = await apiRequest<ApiResponse<Category[]>>({
       url: "/books/categories/",
       method: "get",
+      showAlert: false,
     });
     return res.data;
   },
@@ -34,6 +36,7 @@ export const bookApi = {
     const res = await apiRequest<ApiResponse<BookDetail>>({
       url: `/books/${id}/`,
       method: "get",
+      showAlert: false,
     });
     return res.data;
   },

@@ -1,13 +1,14 @@
 import axios, { AxiosHeaders } from "axios";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import { API_BASE_URL } from "../config";
-import { setGlobalError } from "../context/ErrorContext";
+import { setGlobalAlert } from "../context/ErrorContext";
 import { navigateTo } from "../utils/navigateHelper";
 
 
 export interface ApiRequestOptions extends AxiosRequestConfig {
   useAccess?: boolean;
   useRefresh?: boolean;
+  showAlert?: boolean;
 }
 
 const baseConfig = {
@@ -15,11 +16,10 @@ const baseConfig = {
   timeout: 10000,
 };
 
-
 export const apiRequest = async <T>(
   options: ApiRequestOptions
 ): Promise<AxiosResponse<T>> => {
-  const { useAccess, useRefresh, ...rest } = options;
+  const { useAccess, useRefresh, showAlert = true, ...rest } = options;
 
   const instance = axios.create({
     ...baseConfig,
@@ -49,11 +49,18 @@ export const apiRequest = async <T>(
 
   // ===== Interceptor Response =====
   instance.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      const resData: any = response.data;
+      // ✅ Chỉ hiển thị alert khi showAlert = true
+      if (showAlert && resData?.status === "success" && resData?.message) {
+        setGlobalAlert("success", resData.message);
+      }
+      return response;
+    },
     async (error) => {
       const originalRequest = error.config;
 
-      // Trường hợp token hết hạn → tự refresh
+      // Token hết hạn → tự refresh
       if (
         error.response?.status === 401 &&
         !originalRequest._retry &&
@@ -65,6 +72,7 @@ export const apiRequest = async <T>(
             url: "/customers/refresh-token/",
             method: "post",
             useRefresh: true,
+            showAlert: false,
           });
 
           const newAccess = res.data.data?.access;
@@ -81,7 +89,9 @@ export const apiRequest = async <T>(
           }
         } catch (refreshError) {
           localStorage.removeItem("access_token");
-          setGlobalError("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+          if (showAlert) {
+            setGlobalAlert("error", "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+          }
           navigateTo("/login");
           return Promise.reject(refreshError);
         }
@@ -89,9 +99,11 @@ export const apiRequest = async <T>(
 
       const message =
         error.response?.data?.message ||
+        error.response?.message ||
         error.message ||
-        "Lỗi không xác định từ máy chủ.";
-      setGlobalError(message);
+        "Lỗi không xác định từ máy chủ";
+
+      if (showAlert) setGlobalAlert("error", message);
       return Promise.reject(error);
     }
   );

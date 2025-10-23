@@ -1,6 +1,5 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction, IntegrityError
 from django.contrib.auth.hashers import check_password, make_password
@@ -8,12 +7,14 @@ from django.core.cache import caches
 
 from core.db_exceptions import handle_integrity_error
 from core.auth_customer import CustomJWTAuthentication
+from core.responses import success_response, error_response
 from customer.serializers import CustomerProfileSerializer, CustomerUpdateSerializer
 from .models import Customer
 
 from core.log_queries import log_queries
 
 cache = caches['default']
+
 
 class InforCustomer(APIView):
     """
@@ -31,15 +32,14 @@ class InforCustomer(APIView):
         cached_data = cache.get(cache_key)
         
         if cached_data:
-            return Response({
-                "status": "success",
-                "message": "Lấy Thông Tin của Quý Khách Thành Công (Cache)",
-                "data": cached_data
-            }, status=status.HTTP_200_OK)
+            return success_response(
+                "Lấy Thông Tin của Quý Khách Thành Công (Cache)",
+                data=cached_data
+            )
         
         user = (
             Customer.objects
-            .defer('password',"is_active","is_delete")
+            .defer('password', "is_active", "is_delete")
             .get(id=request.user.id)
         )
         
@@ -47,11 +47,10 @@ class InforCustomer(APIView):
         data = serializer.data
         cache.set(cache_key, data, timeout=600)
 
-        return Response({
-            "status": "success",
-            "message": "Lấy Thông Tin của Quý Khách Thành Công (DB)",
-            "data": serializer.data
-        }, status=status.HTTP_200_OK)
+        return success_response(
+            "Lấy Thông Tin của Quý Khách Thành Công (DB)",
+            data=serializer.data
+        )
 
 
 class UpdateCustomer(APIView):
@@ -75,21 +74,16 @@ class UpdateCustomer(APIView):
             serializer.save()
 
         except IntegrityError as e:
-            return Response(handle_integrity_error(e), status=status.HTTP_400_BAD_REQUEST)
+            err_info = handle_integrity_error(e)
+            return error_response(err_info["message"], errors=err_info["errors"])
         except Customer.DoesNotExist:
-            return Response({
-                "status": "error",
-                "message": "Không tìm thấy khách hàng."
-            }, status=status.HTTP_404_NOT_FOUND)
+            return error_response("Không tìm thấy khách hàng.", http_status=status.HTTP_404_NOT_FOUND)
 
         cache.delete(f'customer_{request.user.id}')
 
-        return Response({
-            "status": "success",
-            "message": "Cập nhật thông tin khách hàng thành công",
-        }, status=status.HTTP_200_OK)
-        
-        
+        return success_response("Cập nhật thông tin khách hàng thành công")
+
+
 class UpdatePasswordCustomer(APIView):
     """
         Tốn 2 truy vấn
@@ -105,27 +99,16 @@ class UpdatePasswordCustomer(APIView):
         new_password = request.data.get("new_password")
 
         if not old_password or not new_password:
-            return Response({
-                "status": "error", "message": "Vui lòng điền đầy đủ old_password và new_password"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return error_response("Vui lòng điền đầy đủ old_password và new_password")
 
         if len(new_password) < 8:
-            return Response(
-                {"status": "error", "message": "Mật khẩu mới phải có ít nhất 8 ký tự"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return error_response("Mật khẩu mới phải có ít nhất 8 ký tự")
 
         user_pw = Customer.objects.filter(id=request.user.id).values_list("password", flat=True).first()
         if not user_pw or not check_password(old_password, user_pw):
-            return Response(
-                {"status": "error", "message": "Mật khẩu cũ không đúng"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return error_response("Mật khẩu cũ không đúng")
 
         new_password = make_password(new_password)
         Customer.objects.filter(id=request.user.id).update(password=new_password)
 
-        return Response(
-            {"status": "success", "message": "Đổi mật khẩu thành công"},
-            status=status.HTTP_200_OK
-        )
+        return success_response("Đổi mật khẩu thành công")

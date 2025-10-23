@@ -21,9 +21,8 @@ class CartItemSerializer(serializers.ModelSerializer):
         ]
 
     def get_book_image(self, obj):
-        request = self.context.get("request")
         if obj.book.image:
-            return request.build_absolute_uri(obj.book.image.url) if request else obj.book.image.url
+            return obj.book.image.url
         return None
 
 

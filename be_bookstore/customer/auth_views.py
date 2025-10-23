@@ -1,6 +1,5 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
@@ -11,12 +10,13 @@ from django.conf import settings
 from core.db_exceptions import handle_integrity_error
 from core.auth_customer import CustomJWTAuthentication
 from core.tokens import CustomerRefreshToken
+from core.responses import success_response, error_response
+from core.log_queries import log_queries
 from .serializers import RegisterSerializer, LoginSerializer
 from .models import Customer
 from cart.models import Cart
 
 refresh_lifetime = int(settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds())
-from core.log_queries import log_queries
 
 
 class RegisterCustomer(APIView):
@@ -36,10 +36,10 @@ class RegisterCustomer(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response({
-                    "status": "error",
-                    "message": "Dữ liệu không hợp lệ",
-                }, status=status.HTTP_400_BAD_REQUEST,
+            return error_response(
+                message="Dữ liệu không hợp lệ",
+                errors=serializer.errors,
+                http_status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
@@ -49,24 +49,21 @@ class RegisterCustomer(APIView):
 
         except IntegrityError as e:
             err_info = handle_integrity_error(e)
-            return Response({
-                    "status": "error",
-                    "message": err_info["message"],
-                    "errors": err_info["errors"],
-                }, status=status.HTTP_400_BAD_REQUEST,
+            return error_response(
+                message=err_info["message"],
+                errors=err_info["errors"],
+                http_status=status.HTTP_400_BAD_REQUEST
             )
 
-        except DatabaseError as e:
-            return Response({
-                    "status": "error",
-                    "message": "Lỗi hệ thống cơ sở dữ liệu",
-                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        except DatabaseError:
+            return error_response(
+                message="Lỗi hệ thống cơ sở dữ liệu",
+                http_status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-        return Response({
-                "status": "success",
-                "message": "Đăng ký tài khoản thành công",
-            }, status=status.HTTP_201_CREATED,
+        return success_response(
+            message="Đăng ký tài khoản thành công",
+            http_status=status.HTTP_201_CREATED
         )
 
 
@@ -87,10 +84,11 @@ class LoginCustomer(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response({
-                "status": "error",
-                "message": "Dữ liệu không hợp lệ.",
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                message="Dữ liệu không hợp lệ.",
+                errors=serializer.errors,
+                http_status=status.HTTP_400_BAD_REQUEST
+            )
 
         username_or_phone = serializer.validated_data["username_or_phone"]
         password = serializer.validated_data["password"]
@@ -100,27 +98,25 @@ class LoginCustomer(APIView):
         ).only("id", "username", "phone", "password", "is_active", "is_delete").first()
 
         if not user or user.is_delete or not user.is_active:
-            return Response({
-                "status": "error",
-                "message": "Tài khoản không tồn tại hoặc đã bị khóa",
-            }, status=status.HTTP_403_FORBIDDEN)
+            return error_response(
+                message="Tài khoản không tồn tại hoặc đã bị khóa",
+                http_status=status.HTTP_403_FORBIDDEN
+            )
 
         if not user.check_password(password):
-            return Response({
-                "status": "error",
-                "message": "Tên đăng nhập hoặc mật khẩu không đúng",
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                message="Tên đăng nhập hoặc mật khẩu không đúng",
+                http_status=status.HTTP_400_BAD_REQUEST
+            )
 
         refresh = CustomerRefreshToken.for_user(user)
         access = refresh.access_token
-        
-        response = Response({
-            "status": "success",
-            "message": "Đăng nhập thành công",
-            "data": {
-                "access": str(access),
-            },
-        }, status=status.HTTP_200_OK)
+
+        response = success_response(
+            message="Đăng nhập thành công",
+            data={"access": str(access)},
+            http_status=status.HTTP_200_OK
+        )
 
         response.set_cookie(
             key="refresh",
@@ -131,7 +127,6 @@ class LoginCustomer(APIView):
             max_age=refresh_lifetime,
             path="/",
         )
-
         return response
 
 
@@ -151,29 +146,27 @@ class LogoutCustomer(APIView):
 
     @log_queries
     def post(self, request):
-        print(f"Logout - Cookies: {request.COOKIES}")
-        print(f"Logout - Headers: {request.headers.get('Origin')}")
-
         refresh_token = request.COOKIES.get("refresh")
         if not refresh_token:
-            return Response({
-                "status": "error", "message": "Cần có Refresh token"
-                },status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                message="Cần có Refresh token",
+                http_status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             RefreshToken(refresh_token).blacklist()
         except TokenError:
-            return Response(
-                {"status": "error", "message": "Refresh token không hợp lệ hoặc đã hết hạn"},
-                status=status.HTTP_400_BAD_REQUEST
+            return error_response(
+                message="Refresh token không hợp lệ hoặc đã hết hạn",
+                http_status=status.HTTP_400_BAD_REQUEST
             )
 
-        return Response(
-            {"status": "success", "message": "Đăng xuất thành công"},
-            status=status.HTTP_205_RESET_CONTENT
+        return success_response(
+            message="Đăng xuất thành công",
+            http_status=status.HTTP_200_OK
         )
-        
-        
+
+
 class RefreshTokenCustomer(APIView):
     """
     Làm mới Access Token từ Refresh Token (lưu trong cookie).
@@ -185,25 +178,21 @@ class RefreshTokenCustomer(APIView):
     @log_queries
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh")
-        print(f"[RefreshTokenCustomer] Received refresh token: {refresh_token}")
-
         if not refresh_token:
-            return Response({
-                "status": "error",
-                "error": "Thiếu refresh token trong cookie"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return error_response(
+                message="Thiếu refresh token trong cookie",
+                http_status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             token = CustomerRefreshToken(refresh_token)
             new_access = token.access_token
 
-            response = Response({
-                "status": "success",
-                "message": "Tạo Access Token mới thành công",
-                "data": {
-                    "access": str(new_access),
-                }
-            }, status=status.HTTP_200_OK)
+            response = success_response(
+                message="Tạo Access Token mới thành công",
+                data={"access": str(new_access)},
+                http_status=status.HTTP_200_OK
+            )
 
             response.set_cookie(
                 key="refresh",
@@ -214,19 +203,16 @@ class RefreshTokenCustomer(APIView):
                 max_age=refresh_lifetime,
                 path="/",
             )
-            print(f"[RefreshTokenCustomer] Set new access token and refreshed cookie.")
             return response
 
-        except (InvalidToken, TokenError) as e:
-            print(f"[RefreshTokenCustomer] Token error: {e}")
-            return Response({
-                "status": "error",
-                "error": "Refresh token không hợp lệ hoặc đã hết hạn",
-            }, status=status.HTTP_401_UNAUTHORIZED)
+        except (InvalidToken, TokenError):
+            return error_response(
+                message="Refresh token không hợp lệ hoặc đã hết hạn",
+                http_status=status.HTTP_401_UNAUTHORIZED
+            )
 
-        except Exception as e:
-            print(f"[RefreshTokenCustomer] Unexpected error: {e}")
-            return Response({
-                "status": "error",
-                "error": "Lỗi không xác định khi làm mới token",
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception:
+            return error_response(
+                message="Lỗi không xác định khi làm mới token",
+                http_status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
