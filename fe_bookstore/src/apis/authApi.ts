@@ -30,6 +30,7 @@ export const authApi = {
             method: "post",
             useAccess: true,
             useRefresh: true,
+            showAlert: true,
         });
         localStorage.removeItem("access_token");
         return res.data;

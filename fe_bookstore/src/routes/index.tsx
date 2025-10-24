@@ -7,7 +7,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import NotFound from "../pages/NotFound";
 import Cart from "../pages/Cart";
-import Account from "../pages/Acount";
+import Account from "../pages/Account";
 import About from "../pages/About";
 import ProtectedRoute from "../components/ProtectedRoute";
 

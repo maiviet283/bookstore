@@ -67,21 +67,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const updateProfile = async (data: any) => {
-    try {
-        const res = await authApi.updateProfile(data);
-        if (res.status === "success" && res.data) {
-            setAuth(res.data, true);
-            setMessage("Cập nhật thông tin thành công", "success");
-        } else {
-            setMessage(res.message || "Cập nhật thất bại", "error");
+        try {
+            const res = await authApi.updateProfile(data);
+            if (res.status === "success" && res.data) {
+                setAuth(res.data, true);
+                setMessage("Cập nhật thông tin thành công", "success");
+            } else {
+                setMessage(res.message || "Cập nhật thất bại", "error");
+            }
+            return res;
+        } catch (error) {
+            setMessage("Lỗi khi cập nhật thông tin", "error");
+            return { status: "error", message: "Lỗi khi cập nhật thông tin", data: null };
         }
-        return res; // ✅ Thêm dòng này
-    } catch (error) {
-        setMessage("Lỗi khi cập nhật thông tin", "error");
-        return { status: "error", message: "Lỗi khi cập nhật thông tin", data: null }; // ✅ Trả về fallback an toàn
-    }
-};
-
+    };
 
     return (
         <AuthContext.Provider

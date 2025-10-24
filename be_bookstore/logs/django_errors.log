@@ -795,3 +795,123 @@
 [2025-10-23 16:46:08,818] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
 [2025-10-23 16:49:29,335] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
 [2025-10-23 16:49:29,338] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 08:37:12,881] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 08:37:12,887] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 08:42:11,393] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 08:42:11,399] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 08:51:57,413] WARNING django.server (213) — "POST /api/carts/update/22/?action=add HTTP/1.1" 401 110
+[2025-10-24 08:54:04,380] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 08:54:04,383] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 08:58:14,569] WARNING django.server (213) — "POST /api/carts/update/2/?action=add HTTP/1.1" 401 110
+[2025-10-24 09:02:11,668] WARNING django.server (213) — "POST /api/carts/update/17/?action=add HTTP/1.1" 401 110
+[2025-10-24 09:05:54,624] WARNING django.server (213) — "POST /api/carts/update/0/?action=clear HTTP/1.1" 401 110
+[2025-10-24 09:13:08,961] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 09:16:10,446] WARNING django.server (213) — "POST /api/carts/update/4/?action=add HTTP/1.1" 401 110
+[2025-10-24 09:19:41,510] WARNING django.server (213) — "POST /api/carts/update/1/?action=add HTTP/1.1" 401 110
+[2025-10-24 09:22:48,821] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 09:22:48,823] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 09:29:36,764] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 09:29:36,769] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 09:33:06,092] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 09:33:06,096] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 09:34:54,265] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:34:54,266] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:34:54,553] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:34:54,554] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:34:55,424] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:34:55,425] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:34:55,888] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:34:55,890] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:34:56,045] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:34:56,046] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:34:56,254] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:34:56,256] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:34:56,491] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:34:56,492] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:35:09,058] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:35:09,060] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:35:28,541] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:35:28,542] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:35:28,935] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:35:28,936] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:35:29,509] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:35:29,513] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:35:29,955] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:35:29,956] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:35:30,036] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:35:30,038] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:35:30,317] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:35:30,318] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:35:30,395] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:35:30,397] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:35:30,590] ERROR django.request (253) — Internal Server Error: /api/carts/update/3/
+[2025-10-24 09:35:30,591] ERROR django.server (213) — "POST /api/carts/update/3/?action=set HTTP/1.1" 500 90
+[2025-10-24 09:36:10,498] WARNING django.server (213) — "POST /api/carts/update/2/?action=remove HTTP/1.1" 401 110
+[2025-10-24 09:41:03,765] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 09:41:03,768] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 09:45:51,928] WARNING django.server (213) — "POST /api/carts/update/3/?action=remove HTTP/1.1" 401 110
+[2025-10-24 09:51:53,411] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 09:51:53,416] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 09:54:54,544] WARNING django.server (213) — "POST /api/carts/update/1/?action=set HTTP/1.1" 401 110
+[2025-10-24 09:59:37,255] WARNING django.server (213) — "POST /api/customers/logout/ HTTP/1.1" 401 110
+[2025-10-24 10:00:15,392] WARNING django.server (213) — "POST /api/customers/login/ HTTP/1.1" 400 83
+[2025-10-24 10:00:21,992] WARNING django.server (213) — "POST /api/customers/login/ HTTP/1.1" 400 83
+[2025-10-24 10:00:55,713] WARNING django.server (213) — "POST /api/customers/login/ HTTP/1.1" 400 83
+[2025-10-24 10:04:48,004] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 10:04:48,006] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 10:09:05,653] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 10:13:53,655] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 10:17:03,719] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 10:17:03,730] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 10:23:03,230] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 10:23:03,233] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 10:27:13,333] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 10:27:13,337] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 10:30:15,385] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 10:30:15,395] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 10:33:26,093] WARNING django.server (213) — "POST /api/customers/logout/ HTTP/1.1" 401 110
+[2025-10-24 10:33:27,632] WARNING django.server (213) — "POST /api/carts/update/1/?action=add HTTP/1.1" 401 96
+[2025-10-24 10:33:27,644] WARNING django.server (213) — "POST /api/customers/refresh-token/ HTTP/1.1" 401 86
+[2025-10-24 10:33:30,393] WARNING django.server (213) — "POST /api/carts/update/2/?action=add HTTP/1.1" 401 96
+[2025-10-24 10:33:30,403] WARNING django.server (213) — "POST /api/customers/refresh-token/ HTTP/1.1" 401 86
+[2025-10-24 10:33:33,167] WARNING django.server (213) — "POST /api/carts/update/3/?action=add HTTP/1.1" 401 96
+[2025-10-24 10:33:33,178] WARNING django.server (213) — "POST /api/customers/refresh-token/ HTTP/1.1" 401 86
+[2025-10-24 10:33:39,118] WARNING django.server (213) — "POST /api/carts/update/3/?action=add HTTP/1.1" 401 96
+[2025-10-24 10:33:39,126] WARNING django.server (213) — "POST /api/customers/refresh-token/ HTTP/1.1" 401 86
+[2025-10-24 10:41:45,237] WARNING django.server (213) — "POST /api/customers/login/ HTTP/1.1" 400 83
+[2025-10-24 10:47:05,730] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 10:47:05,737] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 10:52:12,230] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 10:52:12,233] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 11:00:01,444] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 11:00:01,448] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 11:00:59,896] WARNING django.server (213) — "POST /api/customers/login/ HTTP/1.1" 400 83
+[2025-10-24 11:01:53,040] WARNING django.server (213) — "POST /api/orders/create/ HTTP/1.1" 400 69
+[2025-10-24 11:01:58,884] WARNING django.server (213) — "POST /api/orders/create/ HTTP/1.1" 400 69
+[2025-10-24 11:12:27,963] WARNING django.server (213) — "GET /api/carts/ HTTP/1.1" 401 110
+[2025-10-24 11:16:35,859] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 11:16:35,862] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 11:19:46,822] WARNING django.server (213) — "POST /api/carts/update/2/?action=set HTTP/1.1" 401 110
+[2025-10-24 11:22:50,389] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 11:22:50,396] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 11:26:53,796] WARNING django.server (213) — "GET /api/orders/ HTTP/1.1" 401 110
+[2025-10-24 11:32:03,642] WARNING django.server (213) — "GET /api/orders/ HTTP/1.1" 401 110
+[2025-10-24 11:37:15,389] WARNING django.server (213) — "POST /api/carts/update/1/?action=add HTTP/1.1" 401 110
+[2025-10-24 11:43:48,705] WARNING django.server (213) — "GET /api/orders/ HTTP/1.1" 401 110
+[2025-10-24 13:04:24,848] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 13:04:24,852] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 13:08:17,879] WARNING django.server (213) — "POST /api/carts/update/1/?action=set HTTP/1.1" 401 110
+[2025-10-24 13:11:54,093] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 13:11:54,096] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 13:16:34,412] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 13:16:34,418] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 13:31:15,138] WARNING django.server (213) — "GET /api/orders/ HTTP/1.1" 401 110
+[2025-10-24 13:31:16,576] WARNING django.server (213) — "GET /api/orders/ HTTP/1.1" 401 110
+[2025-10-24 13:31:22,332] WARNING django.server (213) — "POST /api/orders/create/ HTTP/1.1" 401 110
+[2025-10-24 13:31:44,171] WARNING django.server (213) — "POST /api/orders/create/ HTTP/1.1" 400 69
+[2025-10-24 13:39:47,642] WARNING django.server (213) — "POST /api/orders/create/ HTTP/1.1" 400 69
+[2025-10-24 13:43:50,210] WARNING django.server (213) — "GET /api/orders/ HTTP/1.1" 401 110
+[2025-10-24 14:02:09,667] WARNING django.server (213) — "GET /api/orders/ HTTP/1.1" 401 110
+[2025-10-24 14:22:13,533] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 14:22:13,540] WARNING django.server (213) — "GET /api/customers/me/ HTTP/1.1" 401 110
+[2025-10-24 14:23:46,949] WARNING django.server (213) — "GET /favicon.ico HTTP/1.1" 404 4055

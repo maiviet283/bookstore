@@ -59,7 +59,6 @@ export function validateDateOfBirth(dateStr: string) {
 export function validateQuantity(quantity: number, maxStock?: number) {
   if (isNaN(quantity)) return "Số lượng không hợp lệ";
   if (quantity < 0) return "Số lượng không được âm";
-  if (quantity === 0) return "Nếu muốn xoá sản phẩm, hãy chọn nút xoá hoặc nhập 0 để xác nhận";
   if (!Number.isInteger(quantity)) return "Số lượng phải là số nguyên";
   if (maxStock && quantity > maxStock)
     return `Số lượng vượt quá tồn kho (${maxStock})`;

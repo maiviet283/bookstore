@@ -51,6 +51,7 @@ class OrderListAPIView(APIView):
                 )
             )
             .only('id', 'order_code', 'status', 'payment_method', 'total_amount', 'created_at')
+            .order_by('-created_at')
         )
 
         serializer = OrderSerializer(orders, many=True)

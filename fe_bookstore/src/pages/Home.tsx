@@ -2,7 +2,7 @@ import { useBooks } from "../hooks/useBooks";
 import BookGrid from "../components/home/BookGrid";
 import BookListLoader from "../components/home/BookListLoader";
 
-export default function Home() {
+const Home = () => {
   const { books, nextUrl, loading, loadingMore } = useBooks();
 
   return (
@@ -16,3 +16,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default Home
